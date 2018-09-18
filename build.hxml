@@ -2,3 +2,4 @@
 -lua out.lua
 -cmd lua out.lua
 -cp src
+-lib haxe-crypto
