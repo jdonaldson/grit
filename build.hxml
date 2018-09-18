@@ -1,5 +1,6 @@
 -main Main
--lua out.lua
--cmd lua out.lua
+-lua bin/out.lua
+-cmd lua bin/out.lua
 -cp src
 -lib haxe-crypto
+

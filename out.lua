@@ -1222,7 +1222,7 @@ WhenDid.log = function(metric,value)
     pos = 0;
   end;
   local branch = __lua_lib_luautf8_Utf8.sub(_this, pos + 1, pos + len);
-  __haxe_Log.trace(Std.string(branch) .. Std.string(" is the value for branch"), _hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="src/WhenDid.hx",lineNumber=33,className="WhenDid",methodName="log"}));
+  __haxe_Log.trace(Std.string(branch) .. Std.string(" is the value for branch"), _hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="src/WhenDid.hx",lineNumber=36,className="WhenDid",methodName="log"}));
   local fout = __sys_io_File.append("whendid.log");
   local result = __lua_lib_luv_fs_FileSystem.fs_stat(".whendid");
   if (not ((function() 
@@ -1238,7 +1238,7 @@ WhenDid.log = function(metric,value)
     fout:close();
   else
     if (not WhenDid.checkStatus()) then 
-      __haxe_Log.trace("HI", _hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="src/WhenDid.hx",lineNumber=42,className="WhenDid",methodName="log"}));
+      __haxe_Log.trace("HI", _hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="src/WhenDid.hx",lineNumber=45,className="WhenDid",methodName="log"}));
     end;
   end;
 end

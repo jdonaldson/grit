@@ -25,7 +25,10 @@ class WhenDid {
         git('merge $branch --quiet');
         git('branch -d $branch --quiet');
     }
-    static function checkStatus() return false;
+    static function checkStatus() {
+        return false;
+    }
+
     public static function log(metric : String, value : Float){
         var random = new Random();
 
