@@ -2,5 +2,6 @@
 -lua bin/out.lua
 -cmd lua bin/out.lua
 -cp src
+-cp test
 -lib haxe-crypto
 
