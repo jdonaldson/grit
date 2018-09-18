@@ -2,7 +2,7 @@ import sys.io.Process;
 import com.hurlant.crypto.extra.UUID;
 import com.hurlant.crypto.prng.Random;
 
-class WhenDid {
+class Grit {
 
     static function shell(cmd : String) : String {
         var args = ~/\s+/.split(cmd);
@@ -15,7 +15,7 @@ class WhenDid {
         return p.stdout.readAll().toString();
     }
     static function git(args : String){
-        return shell('git $args --git-dir=.whendid');
+        return shell('git $args --git-dir=.grit');
     }
 
     public static function commit(branch : String){
@@ -34,9 +34,9 @@ class WhenDid {
 
         var branch = UUID.generateRandom(random).toString().substr(0,8);
         trace(branch + " is the value for branch");
-        var fout = sys.io.File.append("whendid.log");
+        var fout = sys.io.File.append("grit.log");
 
-        if (!sys.FileSystem.isDirectory(".whendid")){
+        if (!sys.FileSystem.isDirectory(".grit")){
             init();
             var metric = haxe.Json.stringify({metric : metric, value : value});
             fout.writeString('$branch $metric\n');
@@ -51,10 +51,10 @@ class WhenDid {
 
     }
     public static function init() {
-        shell("echo '.whendid' >> .gitignore");
-        shell("git init --separate-git-dir .whendid");
+        shell("echo '.grit' >> .gitignore");
+        shell("git init --separate-git-dir .grit");
         git("add .");
-        git("commit -m 'whendid-head'");
+        git("commit -m 'grit-head'");
     }
 
 }

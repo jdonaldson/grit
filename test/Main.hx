@@ -1,6 +1,6 @@
-import WhenDid;
+import Grit;
 class Main {
     static function main() {
-        WhenDid.log("foo", 2);
+        Grit.log("foo", 2);
     }
 }
