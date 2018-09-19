@@ -37,6 +37,25 @@ class Grit {
     public static function deleteGritTags(){
         shell("git tag -l grit-* | xargs git tag -d");
     }
+    public static function max(metric : String) : GritStamp {
+        var arr = toArr();
+        var max = Math.NEGATIVE_INFINITY;
+        var grit = arr[0];
+        for (stamp in arr){
+            if (stamp.value > max){
+                grit = stamp;
+            }
+        }
+        return grit;
+    }
+    public static function toArr() : Array<GritStamp>{
+        var result = git('tag -n99999 grit-*');
+        var gritstamps = ~/grit\-[a-z0-9]+/g.split(result).join("").trim();
+        var arrstr = "[" + gritstamps.split("\n").join(",") + "]";
+        trace(arrstr + " is the value for arrstr");
+        var arr = haxe.Json.parse(arrstr);
+        return arr;
+    }
 
     public static function log(metric : String, value : Float){
         var branch = git("rev-parse HEAD").substr(0,8);
@@ -61,5 +80,11 @@ class Grit {
 
     }
 
+}
+
+typedef GritStamp = {
+    metric : String,
+    branch : String,
+    value : Float
 }
 
