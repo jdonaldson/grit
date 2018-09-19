@@ -34,9 +34,9 @@ class Main {
     static function main() {
 
         // log a few arbitrary metrics for this run
-        Grit.log("bing", 2);
-        Grit.log("bar", 2);
-        Grit.log("baz", 2);
+        Grit.log("bing", 1);
+        Grit.log("bar",  2);
+        Grit.log("baz",  3);
 
         // find the max value for "baz" across all commits
         var max = Grit.max("baz");
