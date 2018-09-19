@@ -25,7 +25,7 @@ class Grit {
 
     public static function commit(branch : String) : Void {
         git("add .");
-        git('commit -m grit-$branch --quiet');
+        git('commit -m "checkpoint: grit-$branch" --quiet');
     }
 
     public static function isDirty() : Bool {
@@ -76,6 +76,7 @@ class Grit {
                 shell('git tag -fa grit-$branch -m "$current"');
             }
         }
+        Sys.print('Gritlog : $metric = $value\n');
 
 
     }
