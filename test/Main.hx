@@ -6,6 +6,7 @@ class Main {
         Grit.log("bar", 2);
         Grit.log("baz", 2);
         var max = Grit.max("baz");
+        trace(max.branch + " is the value for max.branch");
         trace(max.value + " is the value for max.value");
     }
 }
