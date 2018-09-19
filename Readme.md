@@ -1,6 +1,8 @@
 # Grit : Grid-based  Logging Using Git
 ![Jeff Bridges](https://i.imgur.com/hWToGc7.jpg)
 
+> There are very few fiddle tunes I have not heard. Once heard they are locked in my mind forever.
+
 Grit is a tool to enable easier checkpointing of complex workflows such as ML
 model development.  Grit is written in Haxe, and contains some simple command line tools,
 as well as log helper implementations in python, java, cpp, js, lua, and php.
