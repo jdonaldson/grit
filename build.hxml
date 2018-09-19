@@ -1,6 +1,6 @@
 -main Main
--python bin/out.py
--cmd python bin/out.py
+-python src-gen/grit.py
+-cmd python src-gen/grit.py
 -cp src
 -cp test
 
