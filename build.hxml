@@ -1,6 +1,6 @@
 -main Main
--lua bin/out.lua
--cmd lua bin/out.lua
+-python bin/out.py
+-cmd python bin/out.py
 -cp src
 -cp test
 
