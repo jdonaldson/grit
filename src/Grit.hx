@@ -1,5 +1,7 @@
 import sys.io.Process;
 using StringTools;
+import sys.FileSystem;
+import sys.io.File;
 
 class Grit {
 
@@ -7,36 +9,68 @@ class Grit {
         var p = new Process(cmd);
         var exit = p.exitCode(true);
         if (exit != 0){
-            throw ('Error : ' + p.stderr.readAll().toString());
+            throw (new ProcessFail(exit, p));
         }
         return p.stdout.readAll().toString().trim();
     }
+
     static function git(cmdstr : String) : String {
         var p = new Process('git $cmdstr');
         var exit = p.exitCode(true);
         if (exit != 0){
-            var err = p.stderr.readAll().toString();
-            var out = p.stdout.readAll().toString();
-            var msg = err.length > 0 ? err : out;
-            throw ('Error : $cmdstr\n Message: $msg');
+            throw (new ProcessFail(exit,p));
         }
         return p.stdout.readAll().toString();
     }
 
-    public static function commit(branch : String) : Void {
-        git("add .");
-        git('commit -m "checkpoint: grit-$branch" --quiet');
+    static function succeed(cmd : String) : Bool {
+        try {
+            shell(cmd);
+            return true;
+        } catch (p : ProcessFail){
+            return false;
+        }
     }
+
+    public static function commit() : String {
+        var prevbranch = curbranch();
+        var branchname = 'grit-prev-$prevbranch';
+
+        var verify_code = -1;
+        var check_code = function(code){
+            verify_code = code;
+            return '';
+        }
+
+        var exists = succeed(git('git rev-parse --verify $branchname '));
+        var mode = exists ? "-b" : "";
+        git('checkout $mode $branchname');
+
+        git("add .");
+        git('commit -m "checkpoint from $prevbranch" --quiet');
+        var newhash = curhash();
+        git('git reset --hard $prevbranch');
+        git('git checkout $prevbranch');
+        return newhash;
+    }
+
+    public static function curhash() : String {
+        return git("rev-parse HEAD").substr(0,8);
+    }
+
+    public static function curbranch() : String {
+        return shell('git rev-parse --abbrev-ref HEAD --');
+    }
+
+
 
     public static function isDirty() : Bool {
         var message = "nothing to commit, working tree clean";
         var status = git('status');
         var index = status.lastIndexOf(message);
-        return index == -1;
+        return index != -1;
     }
-    public static function deleteGritTags(){
-        shell("git tag -l grit-* | xargs git tag -d");
-    }
+
     public static function max(metric : String) : GritStamp {
         var arr = toArr();
         var max = Math.NEGATIVE_INFINITY;
@@ -49,43 +83,54 @@ class Grit {
         return grit;
     }
     public static function toArr() : Array<GritStamp>{
-        var result = git('tag -n99999 grit-*');
-        var gritstamps = ~/grit\-[a-z0-9]+/g.split(result).join("").trim();
-        var arrstr = "[" + gritstamps.split("\n").join(",") + "]";
-        trace(arrstr + " is the value for arrstr");
-        var arr = haxe.Json.parse(arrstr);
-        return arr;
+        var f = File.getContent(".grit.csv");
+        var lines = f.split("\n");
+        return [for (l in lines) {
+            var parts = l.split(", ");
+            {hash:parts[0], metric:parts[1], value:Std.parseFloat(parts[2])}
+        }];
     }
 
     public static function log(metric : String, value : Float){
-        var branch = git("rev-parse HEAD").substr(0,8);
-        var payload = {branch : branch, metric : metric, value : value};
-        var payload_str = haxe.Json.stringify(payload);
-        payload_str = ~/"/g.replace(payload_str, "\\\"");
 
-        if (isDirty()){
-            commit(branch);
-        }
-        if (git('tag -l grit-$branch') == ""){
-            git('tag -a grit-$branch -m "$payload_str"');
+        var hash = isDirty()? commit() : curhash();
+
+        var payload = {hash : hash, metric : metric, value : value};
+        var payload_str = haxe.Json.stringify(payload);
+
+        var logfilePath = ".grit.csv";
+        var logstr =  'grit-$hash, $metric, $value';
+
+        if (!FileSystem.exists(".grit.csv")){
+            File.saveContent(".grit.csv",logstr + "\n");
+            File.append(".gitignore").writeString("\n.grit.csv\n");
         } else {
-            var current = shell('git show grit-$branch --quiet --format=%b | tail -n +4');
-            current = ~/"/g.replace(current, "\\\"");
-            if (current.indexOf(payload_str) == -1){
-                current += '\n$payload_str';
-                shell('git tag -fa grit-$branch -m "$current"');
+            var result = "";
+            result = shell('grep "$logstr" .grit.csv');
+            if ( result != logstr){
+                File.append(".grit.csv").writeString(logstr + "\n");
             }
+
         }
-        Sys.print('Gritlog : $metric = $value\n');
 
 
     }
 
 }
 
+class ProcessFail {
+    public var code (default, null) : Int;
+    public var process (default, null) : Process;
+    public function new(code : Int, process : Process){
+        this.code = code;
+        this.process = process;
+
+    }
+}
+
 typedef GritStamp = {
     metric : String,
-    branch : String,
+    hash : String,
     value : Float
 }
 
