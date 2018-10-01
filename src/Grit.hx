@@ -14,6 +14,7 @@ class Grit {
         return p.stdout.readAll().toString().trim();
     }
 
+
     static function git(cmdstr : String) : String {
         var p = new Process('git $cmdstr');
         var exit = p.exitCode(true);
@@ -99,15 +100,14 @@ class Grit {
         var payload_str = haxe.Json.stringify(payload);
 
         var logfilePath = ".grit.csv";
-        var logstr =  'grit-$hash, $metric, $value';
+        var logstr =  '$hash, $metric, $value';
 
         if (!FileSystem.exists(".grit.csv")){
             File.saveContent(".grit.csv",logstr + "\n");
             File.append(".gitignore").writeString("\n.grit.csv\n");
         } else {
             var result = "";
-            result = shell('grep "$logstr" .grit.csv');
-            if ( result != logstr){
+            if (!succeed('grep -Fxq "$logstr" .grit.csv')){
                 File.append(".grit.csv").writeString(logstr + "\n");
             }
 
